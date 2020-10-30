@@ -4,22 +4,22 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/danielwetan/gowords/auth"
-	"github.com/danielwetan/gowords/responses"
+	"github.com/danielwetan/gowords/api/auth"
+	"github.com/danielwetan/gowords/api/responses"
 )
 
-func SetMiddlewareJSON(next http.HandleFunc) http.HandleFunc {
+func SetMiddlewareJSON(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		next(w, r)
 	}
 }
 
-funct SetMiddlewareAuthentification(next http.HandleFunc) http.HandleFunc {
+func SetMiddlewareAuthentication(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		err := auth.TokenValid(r)
 		if err != nil {
-			responses.ERROR(w, http.StatusUnauthorized, errros.New("Unauthorized"))
+			responses.ERROR(w, http.StatusUnauthorized, errors.New("Unauthorized"))
 			return
 		}
 		next(w, r)

@@ -37,7 +37,7 @@ func Load(db *gorm.DB) {
 		log.Fatalf("cannot drop table: %v", err)
 	}
 
-	err = db.Debug().AutoMigrate(&models.User{}, &models.PostP{}).Error
+	err = db.Debug().AutoMigrate(&models.User{}, &models.Post{}).Error
 	if err != nil {
 		log.Fatalf("cannot migrate table: %v", err)
 	}

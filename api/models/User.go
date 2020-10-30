@@ -9,7 +9,6 @@ import (
 
 	"github.com/badoux/checkmail"
 	"github.com/jinzhu/gorm"
-
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -19,7 +18,7 @@ type User struct {
 	Email     string    `gorm:"size:100;not null;unique" json:"email"`
 	Password  string    `gorm:"size:100;not null;" json:"password"`
 	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
-	UpdatedAt time.Time `gorm:"default;CURRENT_TIMESTAMP" json:"updated_at"`
+	UpdatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
 }
 
 func Hash(password string) ([]byte, error) {
@@ -30,8 +29,6 @@ func VerifyPassword(hashedPassword, password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }
 
-// Method receiver
-// bind function to  User struct
 func (u *User) BeforeSave() error {
 	hashedPassword, err := Hash(u.Password)
 	if err != nil {
@@ -96,6 +93,7 @@ func (u *User) Validate(action string) error {
 }
 
 func (u *User) SaveUser(db *gorm.DB) (*User, error) {
+
 	var err error
 	err = db.Debug().Create(&u).Error
 	if err != nil {
@@ -121,12 +119,13 @@ func (u *User) FindUserByID(db *gorm.DB, uid uint32) (*User, error) {
 		return &User{}, err
 	}
 	if gorm.IsRecordNotFoundError(err) {
-		return &User{}, errors.New("User not found")
+		return &User{}, errors.New("User Not Found")
 	}
 	return u, err
 }
 
 func (u *User) UpdateUser(db *gorm.DB, uid uint32) (*User, error) {
+
 	// To hash the password
 	err := u.BeforeSave()
 	if err != nil {
@@ -143,8 +142,7 @@ func (u *User) UpdateUser(db *gorm.DB, uid uint32) (*User, error) {
 	if db.Error != nil {
 		return &User{}, db.Error
 	}
-
-	// Display the update user
+	// This is the display the updated user
 	err = db.Debug().Model(&User{}).Where("id = ?", uid).Take(&u).Error
 	if err != nil {
 		return &User{}, err
@@ -153,12 +151,11 @@ func (u *User) UpdateUser(db *gorm.DB, uid uint32) (*User, error) {
 }
 
 func (u *User) DeleteUser(db *gorm.DB, uid uint32) (int64, error) {
-	db = db.Debug().Model(&User{}).Where("id = ?", uid).Take(&User{}).Delete(&User)
+
+	db = db.Debug().Model(&User{}).Where("id = ?", uid).Take(&User{}).Delete(&User{})
 
 	if db.Error != nil {
 		return 0, db.Error
 	}
-
 	return db.RowsAffected, nil
 }
-
