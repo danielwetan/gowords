@@ -54,4 +54,3 @@ func (server *Server) Run(addr string) {
 	fmt.Println("Listening to port 3000")
 	log.Fatal(http.ListenAndServe(addr, server.Router))
 }
-
